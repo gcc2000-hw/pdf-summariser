@@ -2,8 +2,11 @@ __pycache__/
 *.pyc
 .env
 *.pdf
-venv/
 .vscode/
 *.log
 uploads/
 .pytest_cache/
+environment.yml
+*.egg-info/
+dist/
+build/
