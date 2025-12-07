@@ -10,3 +10,4 @@ environment.yml
 *.egg-info/
 dist/
 build/
+test.py
