@@ -7,6 +7,7 @@ from app.processors.llm_service import (
     OpenAIService,
     HuggingFaceService
 )
+from app.processors.job_manager import JobManager, JobState, job_manager
 
 __all__ = [
     "PDFExtractor", 
@@ -18,4 +19,7 @@ __all__ = [
     "LLMServiceError",
     "OpenAIService",
     "HuggingFaceService",
+    "JobManager",
+    "JobState",
+    "job_manager",
 ]
