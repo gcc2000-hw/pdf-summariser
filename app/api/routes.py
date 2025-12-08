@@ -1,5 +1,4 @@
 
-
 import logging
 import time
 import shutil
@@ -263,7 +262,7 @@ async def summarize_pdf_sync(
             tmp_path.unlink(missing_ok=True)
         raise HTTPException(500, f"Processing failed: {str(e)}")
     
-    
+
 async def process_pdf_background(
     job_id: str,
     summary_mode: SummaryMode,

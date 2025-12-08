@@ -138,7 +138,7 @@ def cli():
               help='Save output to JSON file')
 @click.option('--sync',
               is_flag=True,
-              help='Use synchronous endpoint (blocks until done)')
+              help='Use synch endpoint (blocks until done)')
 def summarize(pdf_file, mode, backend, max_pages, entities, output, sync):
     print_header(f"pdf SUMMARIZER - {mode.upper()} MODE")
     
@@ -156,7 +156,7 @@ def summarize(pdf_file, mode, backend, max_pages, entities, output, sync):
     
     # Use sync endpoint if requested
     if sync:
-        print_info("Using synchronous processing...")
+        print_info("Using synch processing")
         
         try:
             with open(pdf_path, 'rb') as f:

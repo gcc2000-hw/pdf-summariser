@@ -1,9 +1,5 @@
-# app/processors/job_manager.py
-"""
-Job management for async PDF processing
-Tracks job status, progress, and results in memory
-"""
 
+#Async job management for pdf processing
 import logging
 from datetime import datetime
 from typing import Dict, Optional, Any
@@ -21,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class JobState(str, Enum):
-    """Job state enum"""
+    # job states
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -29,11 +25,7 @@ class JobState(str, Enum):
 
 
 class Job:
-    """
-    Represents a single processing job
-    Stores job metadata, status, and results
-    """
-    
+    # represents a processing job and its metadata
     def __init__(self, job_id: str, file_info: Dict[str, Any]):
         self.job_id = job_id
         self.status = JobState.PENDING
@@ -61,15 +53,7 @@ class Job:
         self.processing_time: Optional[float] = None
     
     def to_status_response(self, include_result: bool = False) -> Dict[str, Any]:
-        """
-        Convert job to status response
-        
-        Args:
-            include_result: Whether to include full ProcessResponse
-            
-        Returns:
-            Status response dict
-        """
+        # convert job to status response dict
         response = {
             "job_id": self.job_id,
             "status": self.status.value,
@@ -81,7 +65,7 @@ class Job:
             "result": None
         }
         
-        # Include full result if job is completed and requested
+        # include full result if job is completed and requested
         if include_result and self.status == JobState.COMPLETED:
             response["result"] = {
                 "job_id": self.job_id,
@@ -101,7 +85,7 @@ class Job:
         message: Optional[str] = None,
         error_message: Optional[str] = None
     ):
-        """Update job status and metadata"""
+        # update job status and metadata
         self.status = status
         self.updated_at = datetime.utcnow()
         
@@ -118,26 +102,14 @@ class Job:
 
 
 class JobManager:
-    """
-    Manages all processing jobs
-    Thread-safe in-memory job storage
-    """
+    # Manages all jobs
     
     def __init__(self):
         self.jobs: Dict[str, Job] = {}
-        self.lock = Lock()  # Thread-safe access to jobs dict
+        self.lock = Lock()  # thread safe access to jobs dict
         logger.info("JobManager initialized")
     
     def create_job(self, file_info: Dict[str, Any]) -> str:
-        """
-        Create a new job
-        
-        Args:
-            file_info: Information about uploaded file
-            
-        Returns:
-            Job ID
-        """
         job_id = create_job_id()
         
         with self.lock:
@@ -148,15 +120,6 @@ class JobManager:
         return job_id
     
     def get_job(self, job_id: str) -> Optional[Job]:
-        """
-        Get a job by ID
-        
-        Args:
-            job_id: Job ID
-            
-        Returns:
-            Job object or None if not found
-        """
         with self.lock:
             return self.jobs.get(job_id)
     
@@ -173,16 +136,6 @@ class JobManager:
         message: Optional[str] = None,
         error_message: Optional[str] = None
     ):
-        """
-        Update job status
-        
-        Args:
-            job_id: Job ID
-            status: New status
-            progress: Progress percentage (0-100)
-            message: Status message
-            error_message: Error message if failed
-        """
         job = self.get_job(job_id)
         if job:
             with self.lock:
@@ -197,7 +150,6 @@ class JobManager:
         extract_entities: bool = True,
         entity_types: Optional[list] = None
     ):
-        """Set processing configuration for a job"""
         job = self.get_job(job_id)
         if job:
             with self.lock:
@@ -216,17 +168,6 @@ class JobManager:
         metadata: Dict[str, Any],
         processing_time: float
     ):
-        """
-        Store job processing results
-        
-        Args:
-            job_id: Job ID
-            extracted_text: Extracted PDF text
-            summary: Generated summary
-            entities: Extracted entities
-            metadata: Processing metadata
-            processing_time: Processing time in seconds
-        """
         job = self.get_job(job_id)
         if job:
             with self.lock:
@@ -237,36 +178,16 @@ class JobManager:
                 job.processing_time = processing_time
     
     def get_job_status(self, job_id: str, include_result: bool = True) -> Optional[Dict[str, Any]]:
-        """
-        Get job status response
-        
-        Args:
-            job_id: Job ID
-            include_result: Whether to include full result for completed jobs
-            
-        Returns:
-            Status response dict or None if job not found
-        """
         job = self.get_job(job_id)
         if job:
             return job.to_status_response(include_result=include_result)
         return None
     
     def get_all_jobs(self) -> Dict[str, Job]:
-        """Get all jobs (for debugging/admin purposes)"""
         with self.lock:
             return self.jobs.copy()
     
     def delete_job(self, job_id: str) -> bool:
-        """
-        Delete a job
-        
-        Args:
-            job_id: Job ID
-            
-        Returns:
-            True if deleted, False if not found
-        """
         with self.lock:
             if job_id in self.jobs:
                 del self.jobs[job_id]
@@ -275,7 +196,6 @@ class JobManager:
         return False
     
     def get_stats(self) -> Dict[str, Any]:
-        """Get job manager statistics"""
         with self.lock:
             total = len(self.jobs)
             by_status = {

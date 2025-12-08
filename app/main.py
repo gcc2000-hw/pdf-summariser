@@ -1,9 +1,5 @@
-# app/main.py
-"""
-FastAPI main application
-PDF Summarizer Pro API
-"""
 
+# app main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -22,19 +18,19 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Create FastAPI app
+# Create fastapi app
 app = FastAPI(
-    title="PDF Summarizer Pro API",
-    description="Multi-LLM PDF summarization and entity extraction service",
+    title="PDF summarizer api",
+    description="MultiLLM pdf summarization and entity extraction",
     version=__version__,
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +44,7 @@ app.include_router(router, prefix="/api", tags=["PDF Processing"])
 async def root():
     """Root endpoint"""
     return {
-        "message": "PDF Summarizer Pro API",
+        "message": "PDF Summarizer",
         "version": __version__,
         "docs": "/docs",
         "endpoints": {
@@ -61,7 +57,6 @@ async def root():
 
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check():
-    """Health check endpoint with system status"""
     stats = job_manager.get_stats()
     
     return HealthCheckResponse(
@@ -80,12 +75,9 @@ async def health_check():
 
 @app.on_event("startup")
 async def startup_event():
-    """Run on application startup"""
-    logger.info(f"Starting PDF Summarizer Pro API v{__version__}")
-    logger.info("API documentation available at /docs")
+    logger.info(f"Starting PDF Summarizer v{__version__}")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Run on application shutdown"""
-    logger.info("Shutting down PDF Summarizer Pro API")
+    logger.info("Shutting down PDF Summarizer")
